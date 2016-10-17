@@ -1,0 +1,31 @@
+{
+  "name": "spot-auth-api",
+  "version": "1.0.0",
+  "description": "Spot authentication api",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pinkgorilla/spot-auth-api.git"
+  },
+  "author": "Tris Setiawan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pinkgorilla/spot-auth-api/issues"
+  },
+  "homepage": "https://github.com/pinkgorilla/spot-auth-api#readme",
+  "dependencies": {
+    "jsonwebtoken": "^7.1.9",
+    "mongo-factory": "^1.0.0",
+    "mongodb": "^2.2.10",
+    "passport": "^0.3.2",
+    "passport-facebook": "^2.1.1",
+    "passport-jwt": "^2.1.0",
+    "passport-local": "^1.0.0",
+    "restify": "^4.1.1",
+    "restify-router": "^0.2.1",
+    "spot-module": "git+https://github.com/pinkgorilla/spot-module.git"
+  }
+}
