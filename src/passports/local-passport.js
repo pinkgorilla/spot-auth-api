@@ -1,12 +1,12 @@
-var passport = require('passport');
-var LocalStrategy = require('passport-local').Strategy;
-var AccountManager = require('spot-module').managers.auth.AccountManager;
-var db = require('../db');
+var passport = require("passport");
+var LocalStrategy = require("passport-local").Strategy;
+var AuthManager = require("spot-module").managers.auth.AuthManager;
+var db = require("../db");
 
 passport.use(new LocalStrategy(function(username, password, done) {
     db.get()
         .then(db => {
-            var manager = new AccountManager(db, {
+            var manager = new AuthManager(db, {
                 username: "auth-server"
             });
             manager.authenticate(username, password)
@@ -22,6 +22,6 @@ passport.use(new LocalStrategy(function(username, password, done) {
         });
 }));
 
-module.exports = passport.authenticate('local', {
+module.exports = passport.authenticate("local", {
     session: false
 });

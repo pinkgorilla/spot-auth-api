@@ -1,9 +1,9 @@
-var AccountManager = require('spot-module').managers.auth.AccountManager;
-var db = require('../db');
-var passport = require('passport');
+var AccountManager = require("spot-module").managers.auth.AccountManager;
+var db = require("../db");
+var passport = require("passport");
 
-var JwtStrategy = require('passport-jwt').Strategy;
-var JwtExtract = require('passport-jwt').ExtractJwt;
+var JwtStrategy = require("passport-jwt").Strategy;
+var JwtExtract = require("passport-jwt").ExtractJwt;
 
 var options = {};
 options.jwtFromRequest = JwtExtract.fromAuthHeader();
@@ -15,6 +15,6 @@ passport.use(new JwtStrategy(options,
     }
 ));
 
-module.exports = passport.authenticate('jwt', {
+module.exports = passport.authenticate("jwt", {
     session: false
 });

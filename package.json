@@ -2,7 +2,7 @@
   "name": "spot-auth-api",
   "version": "1.0.0",
   "description": "Spot authentication api",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -26,6 +26,11 @@
     "passport-local": "^1.0.0",
     "restify": "^4.1.1",
     "restify-router": "^0.2.1",
-    "spot-module": "git+https://github.com/pinkgorilla/spot-module.git"
+    "spot-module": "git+https://github.com/pinkgorilla/spot-module.git#dev"
+  },
+  "devDependencies": {
+    "mocha": "^3.2.0",
+    "should": "^11.1.1",
+    "supertest": "^2.0.1"
   }
 }

@@ -1,7 +1,7 @@
-var passport = require('passport');
-var FacebookStrategy = require('passport-facebook').Strategy;
-var AccountManager = require('spot-module').managers.auth.AccountManager;
-var db = require('../db');
+var passport = require("passport");
+var FacebookStrategy = require("passport-facebook").Strategy;
+var AccountManager = require("spot-module").managers.auth.AccountManager;
+var db = require("../db");
 
 var appId = "1720943651560993";
 var appSecret = "a14cd18eedcdbe68ff8173465f6a9f04";
@@ -34,7 +34,7 @@ passport.use(new FacebookStrategy({
                         }
                         else {
                             var email = ((fbProfile.emails || [])[0] || {
-                                value: ''
+                                value: ""
                             }).value;
 
                             manager.checkEmailIsUsed(email)
@@ -47,9 +47,9 @@ passport.use(new FacebookStrategy({
                                         isLocked: false,
 
                                         profile: {
-                                            firstname: fbProfile.name.givenName || '',
-                                            lastname: fbProfile.name.familyName || '',
-                                            gender: fbProfile.gender || 'male',
+                                            firstname: fbProfile.name.givenName || "",
+                                            lastname: fbProfile.name.familyName || "",
+                                            gender: fbProfile.gender || "male",
                                             dob: new Date(),
                                             email: email
                                         },
@@ -80,26 +80,9 @@ passport.use(new FacebookStrategy({
             .catch(e => {
                 return cb(e, null);
             });
-
-
-        // User.findOrCreate({
-        //     facebookId: profile.id
-        // }, function(err, user) {
-        //     return cb(err, user);
-        // }); 
-        // try {
-        //     console.log(profile);
-        //     return cb(null, {
-        //         username: 'facebook',
-
-        //     });
-        // }
-        // catch (e) {
-        //     console.log(e);
-        // }
     }));
 
-module.exports = passport.authenticate('facebook', {
+module.exports = passport.authenticate("facebook", {
     session: false,
     scope: ["public_profile", "email", "user_friends"]
 });
