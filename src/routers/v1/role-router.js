@@ -3,62 +3,59 @@ var Router = require("restify-router").Router;
 var RoleManager = require("spot-module").managers.auth.RoleManager;
 var db = require("../../db");
 var resultFormatter = require("../../result-formatter");
-// var passport = require("../../passports/jwt-passport");
-var passport = function(req, res, next) {
-    req.user = {
-        username: "dev"
-    };
-    next();
-};
+var passport = require("../../passports/jwt-passport");
+
+function getManager(user) {
+    return db.get()
+        .then((db) => {
+            return Promise.resolve(new RoleManager(db, user));
+        });
+}
 
 function getRouter() {
     var router = new Router();
 
     router.get("/", passport, function(request, response, next) {
-        db.get().then(db => {
-                var manager = new RoleManager(db, {
-                    username: "router"
-                });
+        var user = request.user;
+        var query = request.query;
 
-                var query = request.query;
-                query.filter = !query.filter ? {} : JSON.parse(query.filter);
-
-                manager.read(query)
-                    .then(docs => {
-                        var result = resultFormatter.ok(apiVersion, 200, docs.data);
-                        delete docs.data;
-                        result.info = docs;
-                        response.send(200, result);
-                    })
-                    .catch(e => {
-                        var error = resultFormatter.fail(apiVersion, 500, e);
-                        response.send(400, error);
-                    });
+        getManager(user)
+            .then((manager) => {
+                return manager.read(query);
+            })
+            .then(docs => {
+                var result = resultFormatter.ok(apiVersion, 200, docs.data);
+                delete docs.data;
+                result.info = docs;
+                response.send(result.statusCode, result);
             })
             .catch(e => {
                 var error = resultFormatter.fail(apiVersion, 500, e);
-                response.send(500, error);
+                response.send(error.statusCode, error);
             });
     });
 
 
     router.get("/:id", passport, (request, response, next) => {
-        db.get().then(db => {
-                var manager = new RoleManager(db, {
-                    username: "router"
-                });
+        var user = request.user;
+        var id = request.params.id;
 
-                var id = request.params.id;
-
-                manager.getSingleById(id)
-                    .then(doc => {
-                        var result = resultFormatter.ok(apiVersion, 200, doc);
-                        response.send(200, result);
-                    })
-                    .catch(e => {
-                        var error = resultFormatter.fail(apiVersion, 400, e);
-                        response.send(400, error);
-                    });
+        getManager(user)
+            .then((manager) => {
+                return manager.getSingleByIdOrDefault(id);
+            })
+            .then(doc => {
+                var result;
+                if (!doc) {
+                    result = resultFormatter.fail(apiVersion, 404, new Error("data not found"));
+                }
+                else {
+                    result = resultFormatter.ok(apiVersion, 200, doc);
+                }
+                return Promise.resolve(result);
+            })
+            .then((result) => {
+                response.send(result.statusCode, result);
             })
             .catch(e => {
                 var error = resultFormatter.fail(apiVersion, 500, e);
@@ -67,48 +64,53 @@ function getRouter() {
     });
 
     router.post("/", passport, (request, response, next) => {
-        db.get().then(db => {
-                var manager = new RoleManager(db, {
-                    username: "router"
-                });
+        var user = request.user;
+        var data = request.body;
 
-                var data = request.body;
-
-                manager.create(data)
-                    .then(docId => {
-                        response.header("Location", `${request.url}/${docId.toString()}`);
-                        var result = resultFormatter.ok(apiVersion, 201);
-                        response.send(201, result);
-                    })
-                    .catch(e => {
-                        var error = resultFormatter.fail(apiVersion, 400, e);
-                        response.send(400, error);
-                    });
+        getManager(user)
+            .then((manager) => {
+                return manager.create(data);
+            })
+            .then(docId => {
+                response.header("Location", `${request.url}/${docId.toString()}`);
+                var result = resultFormatter.ok(apiVersion, 201);
+                response.send(result.statusCode, result);
             })
             .catch(e => {
-                var error = resultFormatter.fail(apiVersion, 500, e);
-                response.send(500, error);
+                var result;
+                if (e.errors)
+                    result = resultFormatter.fail(apiVersion, 400, e)
+                else
+                    result = resultFormatter.fail(apiVersion, 500, e);
+                response.send(result.statusCode, result);
             });
     });
 
     router.put("/:id", passport, (request, response, next) => {
-        db.get().then(db => {
-                var manager = new RoleManager(db, {
-                    username: "router"
-                });
+        var user = request.user;
+        var id = request.params.id;
+        var data = request.body;
 
-                var id = request.params.id;
-                var data = request.body;
-
-                manager.update(data)
-                    .then(docId => {
-                        var result = resultFormatter.ok(apiVersion, 204);
-                        response.send(204, result);
-                    })
-                    .catch(e => {
-                        var error = resultFormatter.fail(apiVersion, 400, e);
-                        response.send(400, error);
+        getManager(user)
+            .then((manager) => {
+                return manager.getSingleByIdOrDefault(id)
+                    .then((doc) => {
+                        var result;
+                        if (!doc) {
+                            result = resultFormatter.fail(apiVersion, 404, new Error("data not found"));
+                            return Promise.resolve(result);
+                        }
+                        else {
+                            return manager.update(data)
+                                .then(docId => {
+                                    result = resultFormatter.ok(apiVersion, 204);
+                                    return Promise.resolve(result);
+                                });
+                        }
                     });
+            })
+            .then((result) => {
+                response.send(result.statusCode, result);
             })
             .catch(e => {
                 var error = resultFormatter.fail(apiVersion, 500, e);
@@ -117,23 +119,29 @@ function getRouter() {
     });
 
     router.del("/:id", passport, (request, response, next) => {
-        db.get().then(db => {
-                var manager = new RoleManager(db, {
-                    username: "router"
-                });
+        var user = request.user;
+        var id = request.params.id;
 
-                var id = request.params.id;
-                var data = request.body;
-
-                manager.delete(data)
-                    .then(docId => {
-                        var result = resultFormatter.ok(apiVersion, 204);
-                        response.send(204, result);
-                    })
-                    .catch(e => {
-                        var error = resultFormatter.fail(apiVersion, 400, e);
-                        response.send(400, error);
+        getManager(user)
+            .then((manager) => {
+                return manager.getSingleByIdOrDefault(id)
+                    .then(doc => {
+                        var result;
+                        if (!doc) {
+                            result = resultFormatter.fail(apiVersion, 404, new Error("data not found"));
+                            return Promise.resolve(result);
+                        }
+                        else {
+                            return manager.delete(doc)
+                                .then(docId => {
+                                    result = resultFormatter.ok(apiVersion, 204);
+                                    return Promise.resolve(result);
+                                });
+                        }
                     });
+            })
+            .then((result) => {
+                response.send(result.statusCode, result);
             })
             .catch(e => {
                 var error = resultFormatter.fail(apiVersion, 500, e);

@@ -9,7 +9,15 @@ function server() {
         server.use(restify.queryParser());
         server.use(restify.bodyParser());
         server.use(restify.CORS());
-        server.use(passport.initialize());
+        server.use(passport.initialize()); 
+        
+        server.use(function(request, response, next) {
+            var query = request.query;
+            query.order = !query.order ? {} : JSON.parse(query.order);
+            query.filter = !query.filter ? {} : JSON.parse(query.filter);
+            request.queryInfo = query;
+            next();
+        });
 
         require("./routes/default")(server);
         require("./routes/v1")(server);

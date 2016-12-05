@@ -18,6 +18,7 @@
   "homepage": "https://github.com/pinkgorilla/spot-auth-api#readme",
   "dependencies": {
     "jsonwebtoken": "^7.1.9",
+    "model-toolkit": "git+https://github.com/pinkgorilla/model-toolkit.git",
     "mongo-factory": "^1.0.0",
     "mongodb": "^2.2.10",
     "passport": "^0.3.2",
@@ -26,6 +27,7 @@
     "passport-local": "^1.0.0",
     "restify": "^4.1.1",
     "restify-router": "^0.2.1",
+    "spot-models": "git+https://github.com/pinkgorilla/spot-models.git",
     "spot-module": "git+https://github.com/pinkgorilla/spot-module.git#dev"
   },
   "devDependencies": {

@@ -16,5 +16,7 @@ before('initialize server', function(done) {
 describe('@spot-auth-webapi', function() {
     this.timeout(2 * 60000);
 
-    test("~/roles", "./role");
+    test("~/auth", "./routes/auth");
+    test("~/accounts", "./routes/account");
+    test("~/roles", "./routes/role");
 });
