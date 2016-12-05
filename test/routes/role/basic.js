@@ -1,6 +1,6 @@
-require('should');
+require("should");
 const host = `${process.env.IP}:${process.env.PORT}`;
-var Request = require('supertest');
+var Request = require("supertest");
 var ObjectId = require("mongodb").ObjectId;
 var Role = require("spot-module").test.data.auth.role;
 var validate = require("spot-models").validator.auth.role;
@@ -14,14 +14,14 @@ before("#00. get security token", function(done) {
             jwt = token;
             done();
         })
-        .catch(e => {
+        .catch((e) => {
             done(e);
         });
 });
 
-it('#01. get list of roles - [GET]/roles', function(done) {
+it("#01. get list of roles - [GET]/roles", function(done) {
     request
-        .get('/roles')
+        .get("/roles")
         .set("authorization", `JWT ${jwt}`)
         .set("Accept", "application/json")
         .expect(200)
@@ -32,14 +32,14 @@ it('#01. get list of roles - [GET]/roles', function(done) {
             else {
                 var result = response.body;
                 result.should.have.property("apiVersion");
-                result.should.have.property('data');
+                result.should.have.property("data");
                 result.data.should.instanceOf(Array);
                 done();
             }
         });
 });
 
-it('#02. get role by unknown id - [GET]/roles/:id', function(done) {
+it("#02. get role by unknown id - [GET]/roles/:id", function(done) {
     request
         .get(`/roles/${new ObjectId()}`)
         .set("authorization", `JWT ${jwt}`)
@@ -54,7 +54,7 @@ it('#02. get role by unknown id - [GET]/roles/:id', function(done) {
         });
 });
 
-it('#03. get role by id - [GET]/roles/:id', function(done) {
+it("#03. get role by id - [GET]/roles/:id", function(done) {
     Role.getTestData()
         .then((role) => {
             request
@@ -69,7 +69,7 @@ it('#03. get role by id - [GET]/roles/:id', function(done) {
                     else {
                         var result = response.body;
                         result.should.have.property("apiVersion");
-                        result.should.have.property('data');
+                        result.should.have.property("data");
                         result.data.should.instanceOf(Object);
                         validate(result.data);
                         done();
@@ -81,7 +81,7 @@ it('#03. get role by id - [GET]/roles/:id', function(done) {
         });
 });
 
-it('#04. create role by empty data - [POST]/roles', function(done) {
+it("#04. create role by empty data - [POST]/roles", function(done) {
     request
         .post("/roles")
         .send({})
@@ -94,8 +94,8 @@ it('#04. create role by empty data - [POST]/roles', function(done) {
             else {
                 var result = response.body;
                 result.should.have.property("apiVersion");
-                result.should.have.property('message');
-                result.should.have.property('error');
+                result.should.have.property("message");
+                result.should.have.property("error");
                 var error = result.error;
                 error.should.have.property("code");
                 error.should.have.property("name");
@@ -106,7 +106,7 @@ it('#04. create role by empty data - [POST]/roles', function(done) {
 
 var newData;
 var newDataLocation;
-it('#05. create new role and set header.location- [POST]/roles', function(done) {
+it("#05. create new role and set header.location- [POST]/roles", function(done) {
     Role.getNewData()
         .then((role) => {
             newData = role;
@@ -123,7 +123,7 @@ it('#05. create new role and set header.location- [POST]/roles', function(done) 
                     else {
                         var result = response.body;
                         result.should.have.property("apiVersion");
-                        result.should.have.property('message');
+                        result.should.have.property("message");
 
                         var header = response.header;
                         header.should.have.property("location");
@@ -138,7 +138,7 @@ it('#05. create new role and set header.location- [POST]/roles', function(done) 
         });
 });
 
-it('#06. get created role from header.location [GET]/roles/:id', function(done) {
+it("#06. get created role from header.location [GET]/roles/:id", function(done) {
     request
         .get(newDataLocation)
         .set("authorization", `JWT ${jwt}`)
@@ -151,7 +151,7 @@ it('#06. get created role from header.location [GET]/roles/:id', function(done) 
             else {
                 var result = response.body;
                 result.should.have.property("apiVersion");
-                result.should.have.property('data');
+                result.should.have.property("data");
                 var data = result.data;
                 data.should.instanceOf(Object);
                 data.code.should.equal(newData.code);
@@ -164,7 +164,7 @@ it('#06. get created role from header.location [GET]/roles/:id', function(done) 
         });
 });
 
-it('#07. update created role with unknown id - [PUT]/roles/:id', function(done) {
+it("#07. update created role with unknown id - [PUT]/roles/:id", function(done) {
     request
         .put(`/roles/${new ObjectId()}`)
         .send(newData)
@@ -180,7 +180,7 @@ it('#07. update created role with unknown id - [PUT]/roles/:id', function(done) 
         });
 });
 
-it('#08. update created role - [PUT]/roles/:id', function(done) {
+it("#08. update created role - [PUT]/roles/:id", function(done) {
     newData.name += "[updated]";
     request
         .put(`/roles/${newData._id}`)
@@ -197,7 +197,7 @@ it('#08. update created role - [PUT]/roles/:id', function(done) {
         });
 });
 
-it('#09. get updated role - [GET]/roles/:id', function(done) {
+it("#09. get updated role - [GET]/roles/:id", function(done) {
     request
         .get(newDataLocation)
         .set("authorization", `JWT ${jwt}`)
@@ -210,7 +210,7 @@ it('#09. get updated role - [GET]/roles/:id', function(done) {
             else {
                 var result = response.body;
                 result.should.have.property("apiVersion");
-                result.should.have.property('data');
+                result.should.have.property("data");
                 var data = result.data;
                 data.should.instanceOf(Object);
                 data.code.should.equal(newData.code);
@@ -223,7 +223,7 @@ it('#09. get updated role - [GET]/roles/:id', function(done) {
         });
 });
 
-it('#10. get list of roles with keyword - [GET]/roles?keyword', function(done) {
+it("#10. get list of roles with keyword - [GET]/roles?keyword", function(done) {
     request
         .get(`/roles?keyword=${newData.code}`)
         .set("authorization", `JWT ${jwt}`)
@@ -236,7 +236,7 @@ it('#10. get list of roles with keyword - [GET]/roles?keyword', function(done) {
             else {
                 var result = response.body;
                 result.should.have.property("apiVersion");
-                result.should.have.property('data');
+                result.should.have.property("data");
                 result.data.should.instanceOf(Array);
                 var data = result.data;
                 data.length.should.equal(1);
@@ -244,7 +244,7 @@ it('#10. get list of roles with keyword - [GET]/roles?keyword', function(done) {
                 newData.name.should.equal(data[0].name);
                 newData.description.should.equal(data[0].description);
 
-                result.should.have.property('info');
+                result.should.have.property("info");
                 result.info.should.instanceOf(Object);
                 var info = result.info;
                 info.should.have.property("count");
@@ -254,7 +254,7 @@ it('#10. get list of roles with keyword - [GET]/roles?keyword', function(done) {
         });
 });
 
-it('#11. delete created data with unknown id - [DELETE]/roles/:id', function(done) {
+it("#11. delete created data with unknown id - [DELETE]/roles/:id", function(done) {
     request
         .delete(`/roles/${new ObjectId()}`)
         .set("authorization", `JWT ${jwt}`)
@@ -269,7 +269,7 @@ it('#11. delete created data with unknown id - [DELETE]/roles/:id', function(don
         });
 });
 
-it('#12. delete created data - [DELETE]/roles/:id', function(done) {
+it("#12. delete created data - [DELETE]/roles/:id", function(done) {
     request
         .delete(`/roles/${newData._id}`)
         .set("authorization", `JWT ${jwt}`)
@@ -284,7 +284,7 @@ it('#12. delete created data - [DELETE]/roles/:id', function(done) {
         });
 });
 
-it('#13. get deleted role - [GET]/roles/:id', function(done) {
+it("#13. get deleted role - [GET]/roles/:id", function(done) {
     request
         .get(newDataLocation)
         .set("authorization", `JWT ${jwt}`)
@@ -299,7 +299,7 @@ it('#13. get deleted role - [GET]/roles/:id', function(done) {
         });
 });
 
-it('#14. get list of roles with keyword - [GET]/roles?keyword', function(done) {
+it("#14. get list of roles with keyword - [GET]/roles?keyword", function(done) {
     request
         .get(`/roles?keyword=${newData.code}`)
         .set("authorization", `JWT ${jwt}`)
@@ -312,12 +312,12 @@ it('#14. get list of roles with keyword - [GET]/roles?keyword', function(done) {
             else {
                 var result = response.body;
                 result.should.have.property("apiVersion");
-                result.should.have.property('data');
+                result.should.have.property("data");
                 result.data.should.instanceOf(Array);
                 var data = result.data;
                 data.length.should.equal(0);
 
-                result.should.have.property('info');
+                result.should.have.property("info");
                 result.info.should.instanceOf(Object);
                 var info = result.info;
                 info.should.have.property("count");

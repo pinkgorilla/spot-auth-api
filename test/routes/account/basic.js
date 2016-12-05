@@ -1,6 +1,6 @@
-require('should');
+require("should");
 const host = `${process.env.IP}:${process.env.PORT}`;
-var Request = require('supertest');
+var Request = require("supertest");
 var ObjectId = require("mongodb").ObjectId;
 var Account = require("spot-module").test.data.auth.account;
 var AccountModel = require("spot-models").auth.Account;
@@ -15,14 +15,14 @@ before("#00. get security token", function(done) {
             jwt = token;
             done();
         })
-        .catch(e => {
+        .catch((e) => {
             done(e);
         });
 });
 
-it('#01. get list of accounts - [GET]/accounts', function(done) {
+it("#01. get list of accounts - [GET]/accounts", function(done) {
     request
-        .get('/accounts')
+        .get("/accounts")
         .set("authorization", `JWT ${jwt}`)
         .set("Accept", "application/json")
         .expect(200)
@@ -33,14 +33,14 @@ it('#01. get list of accounts - [GET]/accounts', function(done) {
             else {
                 var result = response.body;
                 result.should.have.property("apiVersion");
-                result.should.have.property('data');
+                result.should.have.property("data");
                 result.data.should.instanceOf(Array);
                 done();
             }
         });
 });
 
-it('#02. get account by unknown id - [GET]/accounts/:id', function(done) {
+it("#02. get account by unknown id - [GET]/accounts/:id", function(done) {
     request
         .get(`/accounts/${new ObjectId()}`)
         .set("authorization", `JWT ${jwt}`)
@@ -55,7 +55,7 @@ it('#02. get account by unknown id - [GET]/accounts/:id', function(done) {
         });
 });
 
-it('#03. get account by id - [GET]/accounts/:id', function(done) {
+it("#03. get account by id - [GET]/accounts/:id", function(done) {
     Account.getTestData()
         .then((account) => {
             request
@@ -70,7 +70,7 @@ it('#03. get account by id - [GET]/accounts/:id', function(done) {
                     else {
                         var result = response.body;
                         result.should.have.property("apiVersion");
-                        result.should.have.property('data');
+                        result.should.have.property("data");
                         result.data.should.instanceOf(Object);
 
                         var data = new AccountModel(result.data);
@@ -84,7 +84,7 @@ it('#03. get account by id - [GET]/accounts/:id', function(done) {
         });
 });
 
-it('#04. create account by empty data - [POST]/accounts', function(done) {
+it("#04. create account by empty data - [POST]/accounts", function(done) {
     request
         .post("/accounts")
         .send({})
@@ -97,8 +97,8 @@ it('#04. create account by empty data - [POST]/accounts', function(done) {
             else {
                 var result = response.body;
                 result.should.have.property("apiVersion");
-                result.should.have.property('message');
-                result.should.have.property('error');
+                result.should.have.property("message");
+                result.should.have.property("error");
                 var error = result.error;
                 // error.should.have.property("code");
                 // error.should.have.property("name");
@@ -109,7 +109,7 @@ it('#04. create account by empty data - [POST]/accounts', function(done) {
 
 var newData;
 var newDataLocation;
-it('#05. create new account and set header.location- [POST]/accounts', function(done) {
+it("#05. create new account and set header.location- [POST]/accounts", function(done) {
     Account.getNewData()
         .then((account) => {
             newData = account;
@@ -126,7 +126,7 @@ it('#05. create new account and set header.location- [POST]/accounts', function(
                     else {
                         var result = response.body;
                         result.should.have.property("apiVersion");
-                        result.should.have.property('message');
+                        result.should.have.property("message");
 
                         var header = response.header;
                         header.should.have.property("location");
@@ -141,7 +141,7 @@ it('#05. create new account and set header.location- [POST]/accounts', function(
         });
 });
 
-it('#06. get created account from header.location [GET]/accounts/:id', function(done) {
+it("#06. get created account from header.location [GET]/accounts/:id", function(done) {
     request
         .get(newDataLocation)
         .set("authorization", `JWT ${jwt}`)
@@ -154,7 +154,7 @@ it('#06. get created account from header.location [GET]/accounts/:id', function(
             else {
                 var result = response.body;
                 result.should.have.property("apiVersion");
-                result.should.have.property('data');
+                result.should.have.property("data");
                 result.data.should.instanceOf(Object);
 
                 var data = new AccountModel(result.data);
@@ -165,7 +165,7 @@ it('#06. get created account from header.location [GET]/accounts/:id', function(
         });
 });
 
-it('#07. update created account with unknown id - [PUT]/accounts/:id', function(done) {
+it("#07. update created account with unknown id - [PUT]/accounts/:id", function(done) {
     request
         .put(`/accounts/${new ObjectId()}`)
         .send(newData)
@@ -181,7 +181,7 @@ it('#07. update created account with unknown id - [PUT]/accounts/:id', function(
         });
 });
 
-it('#08. update created account - [PUT]/accounts/:id', function(done) {
+it("#08. update created account - [PUT]/accounts/:id", function(done) {
     newData.profile.firstname += "[updated]";
     request
         .put(`/accounts/${newData._id}`)
@@ -198,7 +198,7 @@ it('#08. update created account - [PUT]/accounts/:id', function(done) {
         });
 });
 
-it('#09. get updated account - [GET]/accounts/:id', function(done) {
+it("#09. get updated account - [GET]/accounts/:id", function(done) {
     request
         .get(newDataLocation)
         .set("authorization", `JWT ${jwt}`)
@@ -211,7 +211,7 @@ it('#09. get updated account - [GET]/accounts/:id', function(done) {
             else {
                 var result = response.body;
                 result.should.have.property("apiVersion");
-                result.should.have.property('data');
+                result.should.have.property("data");
                 result.data.should.instanceOf(Object);
                 
                 var data = new AccountModel(result.data);
@@ -223,7 +223,7 @@ it('#09. get updated account - [GET]/accounts/:id', function(done) {
         });
 });
 
-it('#10. get list of accounts with keyword - [GET]/accounts?keyword', function(done) {
+it("#10. get list of accounts with keyword - [GET]/accounts?keyword", function(done) {
     request
         .get(`/accounts?keyword=${newData.username}`)
         .set("authorization", `JWT ${jwt}`)
@@ -236,13 +236,13 @@ it('#10. get list of accounts with keyword - [GET]/accounts?keyword', function(d
             else {
                 var result = response.body;
                 result.should.have.property("apiVersion");
-                result.should.have.property('data');
+                result.should.have.property("data");
                 result.data.should.instanceOf(Array);
                 var data = result.data;
                 data.length.should.equal(1); 
                 newData.username.should.equal(data[0].username);
 
-                result.should.have.property('info');
+                result.should.have.property("info");
                 result.info.should.instanceOf(Object);
                 var info = result.info;
                 info.should.have.property("count");
@@ -252,7 +252,7 @@ it('#10. get list of accounts with keyword - [GET]/accounts?keyword', function(d
         });
 });
 
-it('#11. delete created data with unknown id - [DELETE]/accounts/:id', function(done) {
+it("#11. delete created data with unknown id - [DELETE]/accounts/:id", function(done) {
     request
         .delete(`/accounts/${new ObjectId()}`)
         .set("authorization", `JWT ${jwt}`)
@@ -267,7 +267,7 @@ it('#11. delete created data with unknown id - [DELETE]/accounts/:id', function(
         });
 });
 
-it('#12. delete created data - [DELETE]/accounts/:id', function(done) {
+it("#12. delete created data - [DELETE]/accounts/:id", function(done) {
     request
         .delete(`/accounts/${newData._id}`)
         .set("authorization", `JWT ${jwt}`)
@@ -282,7 +282,7 @@ it('#12. delete created data - [DELETE]/accounts/:id', function(done) {
         });
 });
 
-it('#13. get deleted account - [GET]/accounts/:id', function(done) {
+it("#13. get deleted account - [GET]/accounts/:id", function(done) {
     request
         .get(newDataLocation)
         .set("authorization", `JWT ${jwt}`)
@@ -297,7 +297,7 @@ it('#13. get deleted account - [GET]/accounts/:id', function(done) {
         });
 });
 
-it('#14. get list of accounts with keyword - [GET]/accounts?keyword', function(done) {
+it("#14. get list of accounts with keyword - [GET]/accounts?keyword", function(done) {
     request
         .get(`/accounts?keyword=${newData.code}`)
         .set("authorization", `JWT ${jwt}`)
@@ -310,12 +310,12 @@ it('#14. get list of accounts with keyword - [GET]/accounts?keyword', function(d
             else {
                 var result = response.body;
                 result.should.have.property("apiVersion");
-                result.should.have.property('data');
+                result.should.have.property("data");
                 result.data.should.instanceOf(Array);
                 var data = result.data;
                 data.length.should.equal(0);
 
-                result.should.have.property('info');
+                result.should.have.property("info");
                 result.info.should.instanceOf(Object);
                 var info = result.info;
                 info.should.have.property("count");

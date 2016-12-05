@@ -1,4 +1,4 @@
-var ValidationError = require('spot-module').ValidationError;
+var ValidationError = require("spot-module").ValidationError;
 
 function formatResult(apiVersion, statusCode, message, data, error) {
     var result = {
@@ -17,7 +17,7 @@ function formatResult(apiVersion, statusCode, message, data, error) {
 
 module.exports = {
     ok: function(apiVersion, statusCode, data) {
-        return formatResult(apiVersion, statusCode, 'ok', data, null);
+        return formatResult(apiVersion, statusCode, "ok", data, null);
     },
 
     fail: function(apiVersion, statusCode, error) {

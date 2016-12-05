@@ -1,6 +1,6 @@
-require('should');
-var Request = require('supertest');
-var Account = require('spot-module').test.data.auth.account;
+require("should");
+var Request = require("supertest");
+var Account = require("spot-module").test.data.auth.account;
 const host = `${process.env.IP}:${process.env.PORT}`;
 var request = Request(host);
 
@@ -9,7 +9,7 @@ function getToken() {
         Account.getTestData()
             .then((account) => {
                 request
-                    .post('/authenticate')
+                    .post("/authenticate")
                     .send({
                         username: account.username,
                         password: "Standar123"

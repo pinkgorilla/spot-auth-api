@@ -4,8 +4,8 @@ function test(name, path) {
     });
 }
 
-before('initialize server', function(done) {
-    var server = require('../server');
+before("initialize server", function(done) {
+    var server = require("../server");
     server()
         .then((server) => {
             done();
@@ -13,10 +13,11 @@ before('initialize server', function(done) {
 });
 
 
-describe('@spot-auth-webapi', function() {
+describe("@spot-auth-webapi", function() {
     this.timeout(2 * 60000);
 
     test("~/auth", "./routes/auth");
     test("~/accounts", "./routes/account");
     test("~/roles", "./routes/role");
+    test("~/me", "./routes/me");
 });

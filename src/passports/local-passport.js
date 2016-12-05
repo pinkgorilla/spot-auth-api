@@ -5,19 +5,16 @@ var db = require("../db");
 
 passport.use(new LocalStrategy(function(username, password, done) {
     db.get()
-        .then(db => {
+        .then((db) => {
             var manager = new AuthManager(db, {
                 username: "auth-server"
             });
-            manager.authenticate(username, password)
-                .then(account => {
-                    return done(null, account);
-                })
-                .catch(e => {
-                    return done(e);
-                });
+            return manager.authenticate(username, password);
         })
-        .catch(e => {
+        .then((account) => {
+            return done(null, account);
+        })
+        .catch((e) => {
             done(e);
         });
 }));

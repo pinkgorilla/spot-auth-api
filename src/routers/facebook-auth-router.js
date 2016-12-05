@@ -1,9 +1,9 @@
-const apiVersion = '1.0.0';
-var Router = require('restify-router').Router;
-var AccountManager = require('spot-module').managers.auth.AccountManager;
-var db = require('../db');
+const apiVersion = "1.0.0";
+var Router = require("restify-router").Router;
+var AccountManager = require("spot-module").managers.auth.AccountManager;
+var db = require("../db");
 var resultFormatter = require("../result-formatter");
-var facebookPassport = require('../passports/facebook-passport');
+var facebookPassport = require("../passports/facebook-passport");
 
 function getRouter() {
     var router = new Router();

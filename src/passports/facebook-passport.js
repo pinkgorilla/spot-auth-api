@@ -18,7 +18,7 @@ passport.use(new FacebookStrategy({
     },
     function(accessToken, refreshToken, fbProfile, cb) {
         db.get()
-            .then(db => {
+            .then((db) => {
                 var manager = new AccountManager(db, {
                     username: "facebook-passport"
                 });
@@ -28,7 +28,7 @@ passport.use(new FacebookStrategy({
                 };
 
                 manager.getSingleByQueryOrDefault(query)
-                    .then(account => {
+                    .then((account) => {
                         if (account) {
                             return cb(null, account);
                         }
@@ -63,21 +63,21 @@ passport.use(new FacebookStrategy({
                                     };
 
                                     manager.create(newAccount)
-                                        .then(id => {
+                                        .then((id) => {
                                             newAccount._id = id;
                                             return cb(null, newAccount);
                                         })
-                                        .catch(e => {
+                                        .catch((e) => {
                                             return cb(e, null);
                                         });
-                                })
+                                });
                         }
                     })
-                    .catch(e => {
+                    .catch((e) => {
                         return cb(e, null);
                     });
             })
-            .catch(e => {
+            .catch((e) => {
                 return cb(e, null);
             });
     }));
