@@ -1,13 +1,15 @@
 const apiVersion = "1.0.0";
 var Router = require("restify-router").Router;
-
-var resultFormatter = require("../../result-formatter");
-var passport = require("../../passports/local-passport");
+var AccountManager = require("spot-module").managers.auth.AccountManager;
+var db = require("../db");
+var resultFormatter = require("../result-formatter");
+var facebookPassport = require("../passports/facebook-passport");
 
 function getRouter() {
     var router = new Router();
+    router.get("/", facebookPassport);
 
-    router.post("/", passport, (request, response, next) => {
+    router.get("/callback", facebookPassport, function(request, response, next) {
         var account = request.user;
 
         var jwt = require("jsonwebtoken");

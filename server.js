@@ -1,37 +1,35 @@
-var restify = require('restify');
-restify.CORS.ALLOW_HEADERS.push('authorization');
+function server() {
+    try {
+        var restify = require("restify");
+        restify.CORS.ALLOW_HEADERS.push("authorization");
 
+        var passport = require("passport");
+        var server = restify.createServer();
 
-var passport = require('passport');
-var server = restify.createServer();
+        server.use(restify.queryParser());
+        server.use(restify.bodyParser());
+        server.use(restify.CORS());
+        server.use(passport.initialize()); 
+        
+        server.use(function(request, response, next) {
+            var query = request.query;
+            query.order = !query.order ? {} : JSON.parse(query.order);
+            query.filter = !query.filter ? {} : JSON.parse(query.filter);
+            request.queryInfo = query;
+            next();
+        });
 
-server.use(restify.queryParser());
-server.use(restify.bodyParser());
-server.use(restify.CORS());
-server.use(passport.initialize()); 
+        require("./routes/default")(server);
+        require("./routes/v1")(server);
 
+        server.listen(process.env.PORT, process.env.IP);
+        console.log(`auth server created at ${process.env.IP}:${process.env.PORT}`);
 
-var authRouter = require('./src/routers/v1/authenticate-router');
-authRouter.applyRoutes(server, "/v1/authenticate");
+        return Promise.resolve(server);
+    }
+    catch (ex) {
+        return Promise.reject(ex);
+    }
+}
 
-var accountRouter = require('./src/routers/v1/account-router');
-accountRouter.applyRoutes(server, "/v1/accounts");
-
-var roleRouter = require('./src/routers/v1/role-router');
-roleRouter.applyRoutes(server, "/v1/roles");
-
-var meRouter = require('./src/routers/v1/me-router');
-meRouter.applyRoutes(server, "/v1/me");
-
-// server.on('after ', function (req, res, err, cb) {
-//   err.body = 'something is wrong!';
-//   return cb();
-// });
-
-// server.on('BadRequestError ', function (req, res, err, cb) {
-//   err.body = 'something is wrong!';
-//   return cb();
-// });
-
-server.listen(process.env.PORT, process.env.IP);
-console.log(`auth server created at ${process.env.IP}:${process.env.PORT}`)
+module.exports = server;
