@@ -1,3 +1,3 @@
 describe("BASIC SCENARIOS", function() {
-    require("./basic");
+    require("./basic")();
 }); 
