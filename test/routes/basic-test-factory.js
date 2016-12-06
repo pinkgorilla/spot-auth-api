@@ -176,7 +176,7 @@ function getBasicTest(opt) {
             });
     });
 
-    it(`#08. get updated account - [GET]/accounts/:id`, function(done) {
+    it(`#08. get updated data - [GET]${uri}/:id`, function(done) {
         request
             .get(`${uri}/${createdData._id}`)
             .set("authorization", `JWT ${jwt}`)
